@@ -1,2 +1,17 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+
+</script>
+
+<svelte:head>
+    <title>CEP Typeracer Game</title>
+</svelte:head>
+
+<body>
+    <button class="test">test</button>
+</body>
+
+
+<style>
+    /* CSS styles are located in a separate file*/
+    @import url("./styles.css");
+</style>
