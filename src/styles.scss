@@ -56,8 +56,12 @@ h3 {
         margin: 0px 3px 0px 3px;
     }
 
-    :global(.highlighted) {
+    :global(.word-highlighted) {
         background-color: grey;
+    }
+
+    :global(.word-error) {
+        background-color: red;
     }
 
     .input-div {

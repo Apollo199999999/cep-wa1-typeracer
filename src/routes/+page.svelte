@@ -25,11 +25,15 @@
     //variable to store the textbox object, which is where the user will type the word, binded from HTML
     let inputBox;
 
+    //variable to store the text in the textbox, binded from HTML
+    let inputBoxText = '';
+
     //variable to store if the timer has started
     let timerStarted = false;
 
     //#endregion
 
+    //#region Game functions
     function startGame() {
         //set timerStarted to false
         timerStarted = false;
@@ -38,7 +42,7 @@
         if (passageIsRandomWords == true) {
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
-            passageWords = Array.from(words(100));
+            passageWords = Array.from(words(1000));
 
             //load all of the words in passageWords in the passage div
             for (var i = 0; i < passageWords.length; i++) {
@@ -47,7 +51,7 @@
                 span.className = 'passage-word';
                 //highlight the first word
                 if (i == 0) {
-                    span.classList.add('highlighted');
+                    span.classList.add('word-highlighted');
                 }
                 passageDiv.appendChild(span);
             }
@@ -57,12 +61,44 @@
         }
     }
 
+    //#endregion
+
+    //#region Event Listeners
+
+    //fires everytime the inputbox detects a new input
+    function inputBoxOnTextChanged() {
+        let currentWord = passageWords[0];
+        
+        //check if the current character in the inputbox matches the same character of the first word in the passageWords array, as that is the current word that the user is supposed to type
+        //if the word is not the same, change the highlight colour of the span to red
+        if (inputBoxText[inputBoxText.length - 1] != currentWord[inputBoxText.length - 1]) {
+            //get the span which is currently highlighted
+            var elements = document.getElementsByClassName("word-highlighted");
+            var span = elements[0];
+
+            //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
+            span.classList.remove("word-highlighted");
+            span.classList.add("word-error");
+        }
+        else {
+            //restore the grey highlighted state of the word in the passage
+            //get the span which is currently flagged as an error
+            var elements = document.getElementsByClassName("word-error");
+            var span = elements[0];
+
+            //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
+            span.classList.remove("word-error");
+            span.classList.add("word-highlighted");
+        }
+    }
+    //#endregion
+
+    //onMount function: executes when page has loaded into browser. It is the entry point of this typeracer game
     onMount(() => {
         startGame();
-
-        //attach an event listener to the textbox
-        
     });
+
+
 
 </script>
 
@@ -116,7 +152,8 @@
 
         <div class="input-div">
             <p class="input-label">Type here:</p>
-            <TextBox bind:this={inputBox}/>
+            <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
+            <TextBox bind:value={inputBoxText} bind:this={inputBox} on:input={inputBoxOnTextChanged}/>
         </div>
     </div>
 
