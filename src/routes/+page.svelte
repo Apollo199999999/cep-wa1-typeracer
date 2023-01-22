@@ -67,8 +67,28 @@
 
     //fires everytime the inputbox detects a new input
     function inputBoxOnTextChanged() {
+        //first, we check if the last characer of the text in the textbox is a space. If so, we move on to the next word
+        if (inputBoxText.endsWith(" ")) {
+            //remove the first word of the passageWords, to indicate that the user has progressed
+            passageWords.shift();
+
+            //get all elements with either the "word-highlighted" class or the "word-error" class (which would return the current span), and remove both classes from the span
+            var spans = document.querySelectorAll(".word-highlighted,.word-error");
+            var span = spans[0];
+            span.classList.remove("word-highlighted");
+            span.classList.remove("word-error");
+
+            //highlight the next word
+            var nextSpan = span.nextElementSibling;
+            nextSpan.classList.add("word-highlighted");
+
+            //clear the input textbox
+            inputBoxText = "";
+            return;
+        }
+
         let currentWord = passageWords[0];
-        
+
         //check if the current character in the inputbox matches the same character of the first word in the passageWords array, as that is the current word that the user is supposed to type
         //if the word is not the same, change the highlight colour of the span to red
         if (inputBoxText[inputBoxText.length - 1] != currentWord[inputBoxText.length - 1]) {
@@ -86,9 +106,11 @@
             var elements = document.getElementsByClassName("word-error");
             var span = elements[0];
 
-            //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
-            span.classList.remove("word-error");
-            span.classList.add("word-highlighted");
+            if (span != null) {
+                //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
+                span.classList.remove("word-error");
+                span.classList.add("word-highlighted");
+            }
         }
     }
     //#endregion
