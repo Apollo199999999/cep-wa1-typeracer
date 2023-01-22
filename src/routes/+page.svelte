@@ -84,14 +84,17 @@
 
             //clear the input textbox
             inputBoxText = "";
+
+            //exit the function
             return;
         }
 
+        //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
         let currentWord = passageWords[0];
 
-        //check if the current character in the inputbox matches the same character of the first word in the passageWords array, as that is the current word that the user is supposed to type
-        //if the word is not the same, change the highlight colour of the span to red
-        if (inputBoxText[inputBoxText.length - 1] != currentWord[inputBoxText.length - 1]) {
+        //check if inputBoxText is equal to the substring of the currentword up until the length of the inputBoxText
+        //if they are not the same, change the highlight colour of the span to red
+        if (inputBoxText != currentWord.substring(0, inputBoxText.length)) {
             //get the span which is currently highlighted
             var elements = document.getElementsByClassName("word-highlighted");
             var span = elements[0];
