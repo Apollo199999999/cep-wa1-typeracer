@@ -32,12 +32,14 @@ h3 {
     transform: translate(-50%,-50%);
 
     .passage {
+        overflow: hidden;
         background-color: var(--fds-control-fill-default);
         width: 80vw;
         max-width: 900px;
         height: 200px;
         margin-bottom: 20px;
-        padding: 1em;
+        border: 1em solid transparent;
+        box-sizing: border-box;
         // Drop shadow
         -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
@@ -46,11 +48,16 @@ h3 {
     }
 
     // Style all of the span elements in passage, as they will be what the user sees as the generated words
-    span {
+    :global(.passage-word) {
         font-family: var(--fds-font-family-display);
+        color: var(--fds-text-secondary);
         font-weight: 600;
-        font-size: 30px;
+        font-size: 25px;
         margin: 0px 3px 0px 3px;
+    }
+
+    :global(.highlighted) {
+        background-color: grey;
     }
 
     .input-div {

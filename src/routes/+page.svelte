@@ -1,6 +1,9 @@
 <script>
     //import components from Fluent Svelte
     import { Button, RadioButton, ContentDialog, TextBox } from "fluent-svelte";
+    //import onMount function to execute javascript once tha page has loaded in the browser
+    import { onMount } from 'svelte';
+    import { words } from '/src/random-words.js';
 
     //#region Variable declarations
 
@@ -13,7 +16,54 @@
     //variable to keep track of the amount of time per game that the user has selected
     let gameTime = 30;
 
+    //array to store all of the words in the passage
+    var passageWords = [];
+
+    //variable to store the passageDiv object, binded from HTML
+    let passageDiv;
+
+    //variable to store the textbox object, which is where the user will type the word, binded from HTML
+    let inputBox;
+
+    //variable to store if the timer has started
+    let timerStarted = false;
+
     //#endregion
+
+    function startGame() {
+        //set timerStarted to false
+        timerStarted = false;
+
+        //if the passage type is random words, generate 100 random words and load it into the passage div
+        if (passageIsRandomWords == true) {
+            //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
+            //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
+            passageWords = Array.from(words(100));
+
+            //load all of the words in passageWords in the passage div
+            for (var i = 0; i < passageWords.length; i++) {
+                const span = document.createElement("span");
+                span.textContent = passageWords[i] + ' ';
+                span.className = 'passage-word';
+                //highlight the first word
+                if (i == 0) {
+                    span.classList.add('highlighted');
+                }
+                passageDiv.appendChild(span);
+            }
+        }
+        else {
+            //TODO: RANDOM QUOTE GENERATOR
+        }
+    }
+
+    onMount(() => {
+        startGame();
+
+        //attach an event listener to the textbox
+        
+    });
+
 </script>
 
 <svelte:head>
@@ -62,20 +112,11 @@
 
     <!-- Passage and input div -->
     <div class="passage-input-collection">
-        <div class="passage">
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-            <span>test</span>
-        </div>
+        <div class="passage" bind:this={passageDiv}/>
 
         <div class="input-div">
             <p class="input-label">Type here:</p>
-            <TextBox value="Placeholder" />
+            <TextBox bind:this={inputBox}/>
         </div>
     </div>
 
