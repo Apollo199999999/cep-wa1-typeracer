@@ -23,7 +23,4 @@
 		font-family: var(--fds-font-family-display) !important;
 	}
 
-	main {
-        margin: 1em;
-	}
 </style>

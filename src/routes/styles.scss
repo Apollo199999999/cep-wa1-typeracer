@@ -1,0 +1,17 @@
+/*CSS Styles for components in the main page.svelte file*/
+/*Note that all styles that begin with "--fds" are from the Fluent Svelte Library*/
+.header {
+    background-color: var(--fds-card-background-default);
+    display: flex;                  /* establish flex container */
+    justify-content: space-between; /* space-between allows us to position one element on the left and the other on the right */
+    flex: 0 0 auto;
+    vertical-align: middle;
+    align-items: center;
+    padding: 1em;
+    
+
+    h1 {
+        margin: 0px;
+    }
+}
+
