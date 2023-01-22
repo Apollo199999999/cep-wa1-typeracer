@@ -1,6 +1,6 @@
 <script>
     //import components from Fluent Svelte
-    import { Button, RadioButton, ContentDialog } from "fluent-svelte";
+    import { Button, RadioButton, ContentDialog, TextBox } from "fluent-svelte";
 
     //#region Variable declarations
 
@@ -60,8 +60,43 @@
     </ContentDialog>
 
 
+    <!-- Passage and input div -->
+    <div class="passage-input-collection">
+        <div class="passage">
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+            <span>test</span>
+        </div>
+
+        <div class="input-div">
+            <p class="input-label">Type here:</p>
+            <TextBox value="Placeholder" />
+        </div>
+    </div>
+
+    <!-- Div which contains quick links at the bottom of the page -->
+    <div class="footer">
+        <Button
+            class="hyperlink"
+            onclick="window.open('https://github.com/Apollo199999999/cep-wa1-typeracer', '_blank', 'noopener');"
+            variant="hyperlink">
+            GitHub repository
+        </Button>
+        <Button
+            class="hyperlink"
+            onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
+            variant="hyperlink">
+            Portfolio page
+        </Button>
+    </div>
+
 </body>
 
 <style lang="scss">
-    @use "./styles"; 
+    @use "./src/styles"; 
 </style>
