@@ -1,9 +1,13 @@
 <script>
+    //#region Imports
+
     //import components from Fluent Svelte
     import { Button, RadioButton, ContentDialog, TextBox } from "fluent-svelte";
     //import onMount function to execute javascript once tha page has loaded in the browser
     import { onMount } from 'svelte';
     import { words } from '/src/random-words.js';
+
+    //#endregion
 
     //#region Variable declarations
 
@@ -67,16 +71,30 @@
 
     //fires everytime the inputbox detects a new input
     function inputBoxOnTextChanged() {
+        //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
+        let currentWord = passageWords[0];
+
         //first, we check if the last characer of the text in the textbox is a space. If so, we move on to the next word
         if (inputBoxText.endsWith(" ")) {
             //remove the first word of the passageWords, to indicate that the user has progressed
             passageWords.shift();
 
             //get all elements with either the "word-highlighted" class or the "word-error" class (which would return the current span), and remove both classes from the span
+            //this removes the highlighting and error flagging from the word
             var spans = document.querySelectorAll(".word-highlighted,.word-error");
             var span = spans[0];
             span.classList.remove("word-highlighted");
             span.classList.remove("word-error");
+
+            //next, depending on if the word the user typed is correct, make the text color of the word red or green
+            let inputBoxTextWithoutSpace = inputBoxText.substring(0, inputBoxText.length - 1);
+
+            if (inputBoxTextWithoutSpace == currentWord) {
+                span.classList.add("word-correct");
+            }
+            else {
+                span.classList.add("word-wrong");
+            }
 
             //highlight the next word
             var nextSpan = span.nextElementSibling;
@@ -88,9 +106,6 @@
             //exit the function
             return;
         }
-
-        //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
-        let currentWord = passageWords[0];
 
         //check if inputBoxText is equal to the substring of the currentword up until the length of the inputBoxText
         //if they are not the same, change the highlight colour of the span to red
@@ -122,8 +137,6 @@
     onMount(() => {
         startGame();
     });
-
-
 
 </script>
 

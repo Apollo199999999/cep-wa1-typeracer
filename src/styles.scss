@@ -56,12 +56,26 @@ h3 {
         margin: 0px 3px 0px 3px;
     }
 
+    // Different styles depending on what the user inputted
+
+    // Style for highlighted word, which shows the current word that the user is supposed to type
     :global(.word-highlighted) {
         background-color: grey;
     }
 
+    // Style for when the user mistypes the word
     :global(.word-error) {
         background-color: red;
+    }
+
+    // Style for when the user types the word correctly and moves on to the next word
+    :global(.word-correct) {
+        color: green;
+    }
+
+    // Style for when the user types the word incorrectly and moves on to the next word
+    :global(.word-wrong) {
+        color: red;;
     }
 
     .input-div {
