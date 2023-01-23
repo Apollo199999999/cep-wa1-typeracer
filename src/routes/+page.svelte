@@ -94,7 +94,7 @@
                 }
                 else {
                     //once the timer hits 0, call clear interval to stop the timer
-                    clearInterval(interval);
+                    clearInterval(timerInterval);
                     
                     //call the gameOver function to show the game over screen
                     gameOver();
