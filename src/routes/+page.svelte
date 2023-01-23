@@ -65,6 +65,11 @@
         }
     }
 
+    //helper function to determine if an element is hidden by overflow
+    function isVerticallyVisible (parent, child) {
+        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top> parent.clientHeight);
+    }
+
     //#endregion
 
     //#region Event Listeners
@@ -75,7 +80,7 @@
         let currentWord = passageWords[0];
 
         //first, we check if the last characer of the text in the textbox is a space. If so, we move on to the next word
-        if (inputBoxText.endsWith(" ")) {
+        if (inputBoxText.endsWith(" ") && inputBoxText.trim().length >= 1) {
             //remove the first word of the passageWords, to indicate that the user has progressed
             passageWords.shift();
 
@@ -99,6 +104,11 @@
             //highlight the next word
             var nextSpan = span.nextElementSibling;
             nextSpan.classList.add("word-highlighted");
+
+            //if the next word is out of view, scroll the passage div manually to bring it into view
+            if (isVerticallyVisible(passageDiv, nextSpan) == false) {
+                nextSpan.scrollIntoView();
+            }
 
             //clear the input textbox
             inputBoxText = "";
