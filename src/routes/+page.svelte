@@ -18,8 +18,11 @@
     //variable to keep track of whether the settings dialog is open or not
     let settingsDialogIsOpen = false;
 
-    //variable to keep track of the amount of time per game that the user has selected
+    //variable to keep track of the amount of time per game that the user has selected (for "random words" passage type)
     let gameTime = 30;
+
+    //variable to keep track of the amount of time left per game (for "random words" passage type)
+    let timeLeft = gameTime;
 
     //array to store all of the words in the passage
     var passageWords = [];
@@ -35,6 +38,9 @@
 
     //variable to store if the timer has started
     let timerStarted = false;
+
+    //variable to store the setInterval object for the timer, so that we can stop the timer from anywhere (for "random words" passage type)
+    let timerInterval;
 
     //#endregion
 
@@ -78,10 +84,58 @@
         }
     }
 
+    //function that starts the game timer
+    function startTimer() {
+        timerInterval = setInterval(
+            function () {
+                //keep decreasing the time left while it is still not at 0s
+                if (timeLeft > 0) {
+                    timeLeft -= 1;
+                }
+                else {
+                    //once the timer hits 0, call clear interval to stop the timer
+                    clearInterval(interval);
+                    
+                    //call the gameOver function to show the game over screen
+                    gameOver();
+                }
+            }
+        , 1000);
+    }
+
+    //function that is called when the game ends
+    function gameOver() {
+        //TODO: CREATE SOME SORT OF GAME OVER SCREEN
+        alert("game over placeholder");
+
+        //restart game
+        startGame();
+    }
+
     //helper function to restore the game to its default state, where no passage is loaded
     function resetGame() {
         //set timerStarted to false
         timerStarted = false;
+
+        //stop the timer, if the timer exists
+        if (timerInterval != null) {
+            clearInterval(timerInterval);
+        }
+
+        if (passageIsRandomQuote == false) {
+            //set the timer settings
+            //set the time left in the game to the time that the user has selected
+            timeLeft = gameTime;
+
+            //show the timer element
+            var timer = document.getElementById("timer-label");
+            timer.style.visibility = "visible";
+        }
+        else {
+            //hide the timer
+            var timer = document.getElementById("timer-label");
+            timer.style.visibility = "hidden";
+        }
 
         //clear the passagediv
         passageDiv.innerHTML = "";
@@ -128,6 +182,13 @@
 
     //fires everytime the inputbox detects a new input
     function inputBoxOnTextChanged() {
+        //start the timer on first input, only if the user has selected "random words" as passage type 
+        // (if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote
+        if (timerStarted == false && passageIsRandomQuote == false) {
+            startTimer();
+            timerStarted = true;
+        }
+
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
         let currentWord = passageWords[0];
 
@@ -153,17 +214,25 @@
                 span.classList.add("word-wrong");
             }
 
-            //highlight the next word
+            //clear the input textbox
+            inputBoxText = "";
+
+            //get the next span
             var nextSpan = span.nextElementSibling;
+
+            //if the next span is null, it means that the user has reached the end of the quote. Show game over screen
+            if (nextSpan == null) {
+                gameOver();
+                return;
+            }
+
+            //highlight the next word
             nextSpan.classList.add("word-highlighted");
 
             //if the next word is out of view, scroll the passage div manually to bring it into view
             if (isVerticallyVisible(passageDiv, nextSpan) == false) {
                 nextSpan.scrollIntoView();
             }
-
-            //clear the input textbox
-            inputBoxText = "";
 
             //exit the function
             return;
@@ -248,6 +317,7 @@
 
     <!-- Passage and input div -->
     <div class="passage-input-collection">
+        <h3 id="timer-label">Time left: {timeLeft}s</h3>
         <div class="passage" bind:this={passageDiv}/>
 
         <div class="input-div">
