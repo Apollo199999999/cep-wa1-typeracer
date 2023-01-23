@@ -114,7 +114,7 @@
             let randomQuote = await generateRandomQuote();
             
             //split random quote into words by spaces, and assign it to the passageWords array
-            passageWords = Array.from(randomQuote.split(" "));
+            passageWords = Array.from(randomQuote.split(" ").filter(Boolean));
 
             //load passagewords into div
             loadWordsIntoDiv();
