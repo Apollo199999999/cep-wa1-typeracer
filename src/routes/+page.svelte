@@ -5,6 +5,7 @@
     import { Button, RadioButton, ContentDialog, TextBox } from "fluent-svelte";
     //import onMount function to execute javascript once tha page has loaded in the browser
     import { onMount } from 'svelte';
+    //import library for random word generation
     import { words } from '/src/random-words.js';
 
     //#endregion
@@ -12,7 +13,7 @@
     //#region Variable declarations
 
     //variable to keep track of passage type
-    let passageIsRandomWords = true;
+    let passageIsRandomQuote = false;
 
     //variable to keep track of whether the settings dialog is open or not
     let settingsDialogIsOpen = false;
@@ -38,36 +39,87 @@
     //#endregion
 
     //#region Game functions
-    function startGame() {
+
+     //helper function to determine if an element is hidden by overflow
+     function isVerticallyVisible (parent, child) {
+        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top> parent.clientHeight);
+    }
+
+    //helper function to load passagewords array into the passage div
+    function loadWordsIntoDiv() {
+        //load all of the words in passageWords in the passage div
+        for (var i = 0; i < passageWords.length; i++) {
+            const span = document.createElement("span");
+            span.textContent = passageWords[i] + ' ';
+            span.className = 'passage-word';
+            //highlight the first word
+            if (i == 0) {
+                span.classList.add('word-highlighted');
+            }
+            passageDiv.appendChild(span);
+        }
+    }
+
+    //helper function to generate quote by querying the Quotable API
+    async function generateRandomQuote() {
+        // Fetch a random quote from the Quotable API
+        const response = await fetch("https://api.quotable.io/random?minLength=200");
+        const data = await response.json();
+
+        if (response.ok) {
+            //return the quote
+            return data.content;
+        } 
+        else {
+            //show an alert
+            alert("An error occured while trying to get a random quote.");
+            location.reload();
+            return;
+        }
+    }
+
+    //helper function to restore the game to its default state, where no passage is loaded
+    function resetGame() {
         //set timerStarted to false
         timerStarted = false;
 
+        //clear the passagediv
+        passageDiv.innerHTML = "";
+
+        //clear the inputbox
+        inputBoxText = "";
+
+        //clear the passagewords array
+        passageWords = [];
+    }
+
+    async function startGame() {
         //if the passage type is random words, generate 100 random words and load it into the passage div
-        if (passageIsRandomWords == true) {
+        if (passageIsRandomQuote == false) {
+            resetGame();
+
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
             passageWords = Array.from(words(1000));
 
-            //load all of the words in passageWords in the passage div
-            for (var i = 0; i < passageWords.length; i++) {
-                const span = document.createElement("span");
-                span.textContent = passageWords[i] + ' ';
-                span.className = 'passage-word';
-                //highlight the first word
-                if (i == 0) {
-                    span.classList.add('word-highlighted');
-                }
-                passageDiv.appendChild(span);
-            }
+            //load passagewords into div
+            loadWordsIntoDiv();
+            
         }
         else {
-            //TODO: RANDOM QUOTE GENERATOR
-        }
-    }
+            //TODO: GENERATE RANDOM QUOTE
+            resetGame();
 
-    //helper function to determine if an element is hidden by overflow
-    function isVerticallyVisible (parent, child) {
-        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top> parent.clientHeight);
+            //get random quote using quotable API
+            let randomQuote = await generateRandomQuote();
+            
+            //split random quote into words by spaces, and assign it to the passageWords array
+            passageWords = Array.from(randomQuote.split(" "));
+
+            //load passagewords into div
+            loadWordsIntoDiv();
+           
+        }
     }
 
     //#endregion
@@ -168,25 +220,25 @@
     </div>
 
      <!-- Settings dialog -->
-    <ContentDialog bind:open={settingsDialogIsOpen} title="Settings">
+    <ContentDialog bind:open={settingsDialogIsOpen} on:close={startGame} title="Settings">
         <!-- Content for the settings dialog goes here -->
         
         <!-- Div containing options to change the passage type -->
         <div>
             <h3 class="dialog-titles">Passage Type:</h3>
-            <RadioButton bind:group={passageIsRandomWords} value={true}>Random words</RadioButton>
+            <RadioButton bind:group={passageIsRandomQuote} value={false}>Random words</RadioButton>
             <br/>
-            <RadioButton bind:group={passageIsRandomWords} value={false}>Random quote/punctuation</RadioButton>
+            <RadioButton bind:group={passageIsRandomQuote} value={true}>Random quote</RadioButton>
         </div>
 
         <!-- Div containing options to change the amount of time -->
         <div>
             <h3 class="dialog-titles">Amount of time:</h3>
-            <RadioButton bind:group={gameTime} value={15}>15s</RadioButton>
+            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={15}>15s</RadioButton>
             <br/>
-            <RadioButton bind:group={gameTime} value={30}>30s</RadioButton>
+            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={30}>30s</RadioButton>
             <br/>
-            <RadioButton bind:group={gameTime} value={60}>60s</RadioButton>
+            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={60}>60s</RadioButton>
         </div>
 
         <!-- Close button -->
