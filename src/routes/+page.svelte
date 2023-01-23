@@ -19,10 +19,10 @@
     let settingsDialogIsOpen = false;
 
     //variable to keep track of the amount of time per game that the user has selected (for "random words" passage type)
-    let gameTime = 30;
+    let wordGameTime = 30;
 
     //variable to keep track of the amount of time left per game (for "random words" passage type)
-    let timeLeft = gameTime;
+    let wordTimeLeft = wordGameTime;
 
     //array to store all of the words in the passage
     var passageWords = [];
@@ -37,11 +37,17 @@
     let inputBoxText = '';
 
     //variable to store if the timer has started
-    let timerStarted = false;
+    let wordTimerStarted = false;
 
     //variable to store the setInterval object for the timer, so that we can stop the timer from anywhere (for "random words" passage type)
-    let timerInterval;
+    let wordTimerInterval;
 
+    //variable to keep track of time taken for the user to finish typing the quote (for "random quote" passage type)
+    let quoteTimeTaken = 0;
+
+    //variable to keep track of whether the quoteTimeTaken has started counting the time taken
+    let quoteTimeStarted = false;
+    
     //#endregion
 
     //#region Game functions
@@ -86,15 +92,15 @@
 
     //function that starts the game timer
     function startTimer() {
-        timerInterval = setInterval(
+        wordTimerInterval = setInterval(
             function () {
                 //keep decreasing the time left while it is still not at 0s
-                if (timeLeft > 0) {
-                    timeLeft -= 1;
+                if (wordTimeLeft > 0) {
+                    wordTimeLeft -= 1;
                 }
                 else {
                     //once the timer hits 0, call clear interval to stop the timer
-                    clearInterval(timerInterval);
+                    clearInterval(wordTimerInterval);
                     
                     //call the gameOver function to show the game over screen
                     gameOver();
@@ -114,18 +120,18 @@
 
     //helper function to restore the game to its default state, where no passage is loaded
     function resetGame() {
-        //set timerStarted to false
-        timerStarted = false;
+        //set wordTimerStarted to false
+        wordTimerStarted = false;
 
         //stop the timer, if the timer exists
-        if (timerInterval != null) {
-            clearInterval(timerInterval);
+        if (wordTimerInterval != null) {
+            clearInterval(wordTimerInterval);
         }
 
         if (passageIsRandomQuote == false) {
             //set the timer settings
             //set the time left in the game to the time that the user has selected
-            timeLeft = gameTime;
+            wordTimeLeft = wordGameTime;
 
             //show the timer element
             var timer = document.getElementById("timer-label");
@@ -184,9 +190,9 @@
     function inputBoxOnTextChanged() {
         //start the timer on first input, only if the user has selected "random words" as passage type 
         // (if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote
-        if (timerStarted == false && passageIsRandomQuote == false) {
+        if (wordTimerStarted == false && passageIsRandomQuote == false) {
             startTimer();
-            timerStarted = true;
+            wordTimerStarted = true;
         }
 
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
@@ -303,11 +309,11 @@
         <!-- Div containing options to change the amount of time -->
         <div>
             <h3 class="dialog-titles">Amount of time:</h3>
-            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={15}>15s</RadioButton>
+            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={15}>15s</RadioButton>
             <br/>
-            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={30}>30s</RadioButton>
+            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={30}>30s</RadioButton>
             <br/>
-            <RadioButton bind:group={gameTime} bind:disabled={passageIsRandomQuote} value={60}>60s</RadioButton>
+            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={60}>60s</RadioButton>
         </div>
 
         <!-- Close button -->
@@ -317,7 +323,7 @@
 
     <!-- Passage and input div -->
     <div class="passage-input-collection">
-        <h3 id="timer-label">Time left: {timeLeft}s</h3>
+        <h3 id="timer-label">Time left: {wordTimeLeft}s</h3>
         <div class="passage" bind:this={passageDiv}/>
 
         <div class="input-div">
