@@ -60,7 +60,7 @@ h3 {
 
     // Style for highlighted word, which shows the current word that the user is supposed to type
     :global(.word-highlighted) {
-        background-color: grey;
+        background-color: var(--fds-text-disabled);
     }
 
     // Style for when the user mistypes the word

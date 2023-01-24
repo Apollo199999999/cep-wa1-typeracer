@@ -30,10 +30,7 @@
     //variable to store the passageDiv object, binded from HTML
     let passageDiv;
 
-    //variable to store the textbox object, which is where the user will type the word, binded from HTML
-    let inputBox;
-
-    //variable to store the text in the textbox, binded from HTML
+    //variable to store the text in the input textbox, binded from HTML
     let inputBoxText = '';
 
     //variable to store if the timer has started
@@ -42,18 +39,41 @@
     //variable to store the setInterval object for the timer, so that we can stop the timer from anywhere (for "random words" passage type)
     let wordTimerInterval;
 
-    //variable to keep track of time taken for the user to finish typing the quote (for "random quote" passage type)
+    //variable to keep track of time taken for the user to finish typing the quote to calculate WPM (for "random quote" passage type)
     let quoteTimeTaken = 0;
 
-    //variable to keep track of whether the quoteTimeTaken has started counting the time taken
+    //variable to keep track of whether the quoteTimeTaken has started counting the time taken (to help calculate wpm)
     let quoteTimeStarted = false;
+
+    //variable to store the setInterval object for the time taken by the user to tupe the quote
+    let quoteTimeInterval;
     
+    //variable to keep track of whether the result dialog (which is showed during game over), is opem
+    let resultDialogIsOpen = false;
+
+    //variable to keep track of the total number of characters from all of the words that the user has entered
+    let totalCharacterCount = 0;
+
+    //variable to keep track of the number characters from only the correct words that the user has typed
+    let correctCharacterCount = 0;
+
+    //for wpm calculations, refer to this: https://monkeytype.com/about and the portfolio page
+
+    //variable to store the typing speed of the user (includes only correct words), in wpm
+    let wpm = 0;
+    
+    //variable to store the typing speed of the user (includes correct and wrong words) in wpm
+    let rawWPM = 0;
+
+    //variable to store the typing accuracy of the user
+    let typingAccuracy = 0;
+
     //#endregion
 
     //#region Game functions
 
      //helper function to determine if an element is hidden by overflow
-     function isVerticallyVisible (parent, child) {
+    function isVerticallyVisible (parent, child) {
         return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top> parent.clientHeight);
     }
 
@@ -91,7 +111,7 @@
     }
 
     //function that starts the game timer
-    function startTimer() {
+    function startWordTimer() {
         wordTimerInterval = setInterval(
             function () {
                 //keep decreasing the time left while it is still not at 0s
@@ -109,23 +129,70 @@
         , 1000);
     }
 
+    //function to measure the time taken by the user to type the quote
+    function measureQuoteTimeTaken() {
+        quoteTimeInterval = setInterval(
+            function() {
+                //increment quotetimetaken
+                quoteTimeTaken += 1;
+                console.log(quoteTimeTaken);
+            }
+        , 1000);
+    }
+
     //function that is called when the game ends
     function gameOver() {
-        //TODO: CREATE SOME SORT OF GAME OVER SCREEN
-        alert("game over placeholder");
+        //formatter to format percentage to 2dp
+        const decimalFormatter = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 0,      
+            maximumFractionDigits: 2,
+        });
 
-        //restart game
-        startGame();
+        //update the wpm stats respectively for both "random word" and "random quote" passage types
+        if (passageIsRandomQuote == false) {
+            wpm = (correctCharacterCount / 5) / (wordGameTime / 60);
+            rawWPM = (totalCharacterCount / 5) / (wordGameTime / 60);
+        }
+        else {
+            wpm = (correctCharacterCount / 5) / (quoteTimeTaken / 60);
+            rawWPM = (totalCharacterCount / 5) / (quoteTimeTaken / 60);
+        }
+
+        wpm = decimalFormatter.format(wpm);
+        rawWPM = decimalFormatter.format(rawWPM);
+        typingAccuracy = (correctCharacterCount / totalCharacterCount) * 100;
+        typingAccuracy = decimalFormatter.format(typingAccuracy);
+
+        //show the result dialog
+        resultDialogIsOpen = true;
     }
 
     //helper function to restore the game to its default state, where no passage is loaded
     function resetGame() {
+        //reset wpm stats
+        wpm = 0;
+        rawWPM = 0;
+        typingAccuracy = 0;
+        totalCharacterCount = 0;
+        correctCharacterCount = 0;
+
+        //close the result dialog
+        resultDialogIsOpen = false;
+
         //set wordTimerStarted to false
         wordTimerStarted = false;
 
-        //stop the timer, if the timer exists
+        //set quotetimestarted to false
+        quoteTimeStarted = false;
+
+        //stop the timer for the words, if the timer exists
         if (wordTimerInterval != null) {
             clearInterval(wordTimerInterval);
+        }
+
+        //stop measuring the time taken for the quote, if it exists
+        if (quoteTimeInterval != null) {
+            clearInterval(quoteTimeInterval);
         }
 
         if (passageIsRandomQuote == false) {
@@ -154,10 +221,11 @@
     }
 
     async function startGame() {
+        //reset the game
+        resetGame();
+
         //if the passage type is random words, generate 100 random words and load it into the passage div
         if (passageIsRandomQuote == false) {
-            resetGame();
-
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
             passageWords = Array.from(words(1000));
@@ -167,9 +235,6 @@
             
         }
         else {
-            //TODO: GENERATE RANDOM QUOTE
-            resetGame();
-
             //get random quote using quotable API
             let randomQuote = await generateRandomQuote();
             
@@ -187,12 +252,22 @@
     //#region Event Listeners
 
     //fires everytime the inputbox detects a new input
-    function inputBoxOnTextChanged() {
+    function inputBoxOnTextChanged(char) {
+        //increase the total character count (do not include backspace in the character count)
+        if (char != null) {
+            totalCharacterCount += 1;
+        }
+
         //start the timer on first input, only if the user has selected "random words" as passage type 
         // (if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote
         if (wordTimerStarted == false && passageIsRandomQuote == false) {
-            startTimer();
+            startWordTimer();
             wordTimerStarted = true;
+        }
+        else if (quoteTimeStarted == false && passageIsRandomQuote == true) {
+            //start measuring the time taken by the user to type the quoe
+            measureQuoteTimeTaken();
+            quoteTimeStarted = true;
         }
 
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
@@ -215,6 +290,9 @@
 
             if (inputBoxTextWithoutSpace == currentWord) {
                 span.classList.add("word-correct");
+
+                //add the number of characters in the currentWord to the correctcharactercount variable
+                correctCharacterCount += inputBoxText.length;
             }
             else {
                 span.classList.add("word-wrong");
@@ -329,7 +407,8 @@
         <div class="input-div">
             <p class="input-label">Type here:</p>
             <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
-            <TextBox bind:value={inputBoxText} bind:this={inputBox} on:input={inputBoxOnTextChanged}/>
+            <!-- Each character inputted into the textbox is passed in to the function as an argument -->
+            <TextBox bind:value={inputBoxText} on:input={(input) => inputBoxOnTextChanged(input.data)}/>
         </div>
     </div>
 
@@ -349,6 +428,18 @@
         </Button>
     </div>
 
+    <!-- ContentDialog which shows the result of the typeracer game -->
+    <ContentDialog bind:open={resultDialogIsOpen} on:close={startGame} title="Results" tabindex="-1">
+        <div>
+            <h1>WPM: {wpm}</h1>
+            <h3>Raw WPM: {rawWPM}</h3>
+            <h3>Accuracy: {typingAccuracy}%</h3>
+            <p>Total characters typed: {totalCharacterCount}</p>
+            <p>Correct characters typed: {correctCharacterCount}</p>
+        </div>
+        <!-- Close button -->
+        <Button slot="footer" variant="accent" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
+    </ContentDialog>
 </body>
 
 <style lang="scss">
