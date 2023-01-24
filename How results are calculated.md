@@ -1,4 +1,4 @@
-# How results in the typeracer game are calculated
+# How the metrics in the "Results" dialog shown at the end of the game are calculated
 The following points detail how the metrics in the "Results" dialog shown at the end of the game are calculated:
 * Total characters typed: The total number of characters from **all** of the words that the user has typed, including spaces.
 * Correct characters typed: The total number of characters from **all** of the words that the user has typed, including spaces.
