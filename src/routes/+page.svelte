@@ -142,6 +142,10 @@
 
     //function that is called when the game ends
     function gameOver() {
+        //make the input box lose focus
+        var inputBox = document.getElementById("input-box");
+        inputBox.blur();
+
         //formatter to format percentage to 2dp
         const decimalFormatter = new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 0,      
@@ -169,6 +173,10 @@
 
     //helper function to restore the game to its default state, where no passage is loaded
     function resetGame() {
+        //make the input box lose focus
+        var inputBox = document.getElementById("input-box");
+        inputBox.blur();
+        
         //reset wpm stats
         wpm = 0;
         rawWPM = 0;
@@ -340,7 +348,7 @@
             var span = elements[0];
 
             if (span != null) {
-                //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
+                //modify the classes of the span element so that it takes on the word-highlighted class instead, where the background is highlighted grey
                 span.classList.remove("word-error");
                 span.classList.add("word-highlighted");
             }
@@ -395,7 +403,7 @@
         </div>
 
         <!-- Close button -->
-        <Button slot="footer" variant="accent" on:click={() => (settingsDialogIsOpen = false)}>Close</Button>
+        <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (settingsDialogIsOpen = false)}>Close</Button>
     </ContentDialog>
 
 
@@ -408,7 +416,7 @@
             <p class="input-label">Type here:</p>
             <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
             <!-- Each character inputted into the textbox is passed in to the function as an argument -->
-            <TextBox bind:value={inputBoxText} on:input={(input) => inputBoxOnTextChanged(input.data)}/>
+            <TextBox bind:value={inputBoxText} id="input-box" on:input={(input) => inputBoxOnTextChanged(input.data)}/>
         </div>
     </div>
 
@@ -435,7 +443,7 @@
     </div>
 
     <!-- ContentDialog which shows the result of the typeracer game -->
-    <ContentDialog bind:open={resultDialogIsOpen} on:close={startGame} title="Results" tabindex="-1">
+    <ContentDialog bind:open={resultDialogIsOpen} on:close={startGame} title="Results">
         <div>
             <h1>WPM: {wpm}</h1>
             <h3>Raw WPM: {rawWPM}</h3>
@@ -444,7 +452,7 @@
             <p>Correct characters typed: {correctCharacterCount}</p>
         </div>
         <!-- Close button -->
-        <Button slot="footer" variant="accent" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
+        <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
     </ContentDialog>
 </body>
 
