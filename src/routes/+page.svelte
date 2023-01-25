@@ -408,7 +408,7 @@
             <p class="input-label">Type here:</p>
             <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
             <!-- Each character inputted into the textbox is passed in to the function as an argument -->
-            <TextBox bind:value={inputBoxText} on:input={(input) => inputBoxOnTextChanged(input.data)} autocapitalize="off"/>
+            <TextBox bind:value={inputBoxText} on:input={(input) => inputBoxOnTextChanged(input.data)}/>
         </div>
     </div>
 
