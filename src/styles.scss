@@ -54,6 +54,8 @@ h3 {
         font-weight: 600;
         font-size: 25px;
         margin: 0px 3px 0px 3px;
+        // Set specific line height so that the <span> element doesn't get cut off halfway when using other fonts
+        line-height: calc((215px - 2em) / 5);
     }
 
     // Different styles for the words in the passage depending on what the user inputted
