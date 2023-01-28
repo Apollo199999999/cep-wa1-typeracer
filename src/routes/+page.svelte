@@ -436,7 +436,7 @@
         </Button>
         <Button
             class="hyperlink"
-            onclick="window.open('https://github.com/Apollo199999999/cep-wa1-typeracer/blob/main/How%20results%20are%20calculated.md', '_blank', 'noopener');"
+            onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
             variant="hyperlink">
             How the metrics in the game results are calculated
         </Button>
