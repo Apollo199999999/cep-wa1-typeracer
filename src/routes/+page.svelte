@@ -80,10 +80,14 @@
     //helper function to generate a random word and load it into the passage div
     function generateRandomWord() {
         //create a new span to add into the passage div, where the text content is a random word
+        var randomWord = words();
         const span = document.createElement("span");
-        span.textContent = words() + ' ';
+        span.textContent = randomWord + ' ';
         span.className = 'passage-word';
+        //add the span to passage div, and add the random word to passage words array
         passageDiv.appendChild(span);
+        passageWords.push(randomWord);
+
     }
 
     //helper function to load passagewords array into the passage div
