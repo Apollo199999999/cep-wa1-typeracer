@@ -74,7 +74,7 @@
 
     //helper function to determine if an element is hidden by overflow
     function isVerticallyVisible (parent, child) {
-        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top> parent.clientHeight);
+        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top > parent.clientHeight);
     }
 
     //helper function to generate a random word and load it into the passage div
@@ -339,12 +339,9 @@
             //highlight the next word
             nextSpan.classList.add("word-highlighted");
 
-            //if the next word is out of view, scroll the passage div manually to bring it into view, and also scroll the timer into view
+            //if the next word is out of view, scroll the passage div manually to bring it into view
             if (isVerticallyVisible(passageDiv, nextSpan) == false) {
-                nextSpan.scrollIntoView();
-
-                var timerlabel = document.getElementById("timer-label");
-                timerlabel.scrollIntoView();
+                passageDiv.scrollTop += (200 - 16 - 16);
             }
 
             //exit the function
