@@ -321,9 +321,12 @@
             //highlight the next word
             nextSpan.classList.add("word-highlighted");
 
-            //if the next word is out of view, scroll the passage div manually to bring it into view
+            //if the next word is out of view, scroll the passage div manually to bring it into view, and also scroll all the way up to ensure the timer is visible
             if (isVerticallyVisible(passageDiv, nextSpan) == false) {
                 nextSpan.scrollIntoView();
+
+                var header = document.getElementById("header");
+                header.scrollIntoView();
             }
 
             //exit the function
@@ -370,7 +373,7 @@
 <body>
     <div class="container">
         <!-- Header div -->
-        <div class="header">
+        <div class="header" id="header">
             <div class="header-text-div">
                 <h1 class="header-text">CEP Typeracer Game</h1>
             </div>

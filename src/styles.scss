@@ -1,12 +1,5 @@
 //CSS Styles for components in the main page.svelte file
 //Note that all styles that begin with "--fds" are from the Fluent Svelte Library
-body {
-    height: 100vh;
-}
-
-.container {
-    height: auto;
-}
 
 .header {
     background-color: var(--fds-card-background-default);
