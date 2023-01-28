@@ -1,81 +1,113 @@
-// CSS Styles for components in the main page.svelte file
-// Note that all styles that begin with "--fds" are from the Fluent Svelte Library
+//CSS Styles for components in the main page.svelte file
+//Note that all styles that begin with "--fds" are from the Fluent Svelte Library
+body {
+    height: 100vh;
+}
+
+.container {
+    height: auto;
+}
+
 .header {
     background-color: var(--fds-card-background-default);
     display: flex;                  // establish flex container
-    justify-content: space-between; // space-between allows us to position one element on the left and the other on the right
+    justify-content: space-between; // space-between allows us to position one element on the left and the other on the right (the header on the left and the settings button on the right)
     flex: 0 0 auto;
     vertical-align: middle;
     align-items: center;
     padding: 1em;
-    // Drop shadow
+    //Drop shadow
     -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     
-    // Remove bottom margin for the header text
+    //Remove bottom margin for the header text, and add right margin to make sure there is space between the header text and the settings button on smaller screens
     h1 {
-        margin: 0px;
+        margin: 0px 10px 0px 10px;
     }
 }
 
-// Decrease the margin for the ContentDialog titles
+//Decrease the margin for the ContentDialog titles
 h3 {
     margin-bottom: 10px;
 }
 
 // CSS for the passage
 .passage-input-collection {
-    //Center the element relative to the screen
-    position: absolute;
-    top:  50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    //Center the passage and textbox relative to the screen
+
+    //Use a media query to determine how the input should be positioned
+    @media screen and (max-width: 700px) {
+        //Use flexbox to align the div center horizontally, and use a manual margin-top attribute, ensuring that there is enough space for the virtual keyboard to slide up
+        display: flex;
+        justify-content: center; /* center horizontal */
+        align-items: center; /* center vertical */
+        margin-top: 7vw;
+    }
+
+    @media screen and (min-width: 701px) {
+        //otherwise, use absolute positioning to position the div center og the screen
+        position: absolute;
+        top:  50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+
+    #timer-label {
+        width: 90vw;
+        max-width: 900px;
+        margin: 0 auto 10px auto;
+    }
 
     .passage {
         overflow: hidden;
         background-color: var(--fds-control-fill-default);
+
+        //height, width, margin declarations
         width: 90vw;
         max-width: 900px;
-        height: 200px;
-        margin-bottom: 20px;
+        height: 200px;  
+        margin: 0px auto 20px auto;
+
+        //border
         border: 1em solid transparent;
         box-sizing: border-box;
-        // Drop shadow
+
+        //Drop shadow
         -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-        // Rounded corners
+        //Rounded corners
         border-radius: 4px;
     }
 
-    // Style all of the span elements in passage, as they will be what the user sees as the generated words
+    //Style all of the span elements in passage, as they will be what the user sees as the generated words
     :global(.passage-word) {
         font-family: var(--fds-font-family-display);
         color: var(--fds-text-secondary);
         font-weight: 600;
         font-size: 25px;
         margin: 0px 3px 0px 3px;
-        // Set specific line height so that the <span> element doesn't get cut off halfway when using other fonts
+        //Set specific line height so that the <span> element doesn't get cut off halfway when using other fonts
         line-height: calc((215px - 2em) / 5);
     }
 
-    // Different styles for the words in the passage depending on what the user inputted
+    //Different styles for the words in the passage depending on what the user inputted
 
-    // Style for highlighted word, which shows the current word that the user is supposed to type
+    //Style for highlighted word, which shows the current word that the user is supposed to type
     :global(.word-highlighted) {
         background-color: var(--fds-text-disabled);
     }
 
-    // Style for when the user mistypes the word
+    //Style for when the user mistypes the word
     :global(.word-error) {
         background-color: red;
     }
 
-    // Style for when the user types the word correctly and moves on to the next word
+    //Style for when the user types the word correctly and moves on to the next word
     :global(.word-correct) {
         color: green;
     }
 
-    // Style for when the user types the word incorrectly and moves on to the next word
+    //Style for when the user types the word incorrectly and moves on to the next word
     :global(.word-wrong) {
         color: red;
     }
@@ -84,20 +116,18 @@ h3 {
         width: 80vw;
         max-width: 800px;
         margin: 0 auto;
+
+        //Decrease margins on input-label (the label above the textbox)
+        .input-label {
+            margin-top: 0px;
+            margin-bottom: 10px;
+        }
     }
 
-    // Decrease bottom margin on input-label (the label above the textbox)
-    .input-label {
-        margin-bottom: 10px;
+    .links {
+        //Style the links section by adding padding and background
+        margin: 20px auto 0 auto;
+        text-align: center;
     }
-}
-
-.footer {
-    background-color: var(--fds-card-background-default);
-    padding: 1em;
-    // Position the footer at the bottom of the page
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    
 }

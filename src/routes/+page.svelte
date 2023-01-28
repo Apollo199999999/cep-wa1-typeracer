@@ -368,93 +368,99 @@
 </svelte:head>
 
 <body>
-    <!-- Header div -->
-    <div class="header">
-       <div class="header-text-div">
-            <h1 class="header-text">CEP Typeracer Game</h1>
-       </div>
-       
-       <div class="settings-btn-div">
-            <!-- Settings button which opens a settings dialog -->
-            <Button variant="accent" on:click={() => (settingsDialogIsOpen = true)}>Settings</Button>
-       </div>
+    <div class="container">
+        <!-- Header div -->
+        <div class="header">
+            <div class="header-text-div">
+                <h1 class="header-text">CEP Typeracer Game</h1>
+            </div>
+            
+            <div class="settings-btn-div">
+                <!-- Settings button which opens a settings dialog -->
+                <Button variant="accent" on:click={() => (settingsDialogIsOpen = true)}>Settings</Button>
+            </div>
+        </div>
+    
+        <!-- Settings dialog -->
+        <ContentDialog bind:open={settingsDialogIsOpen} on:close={startGame} title="Settings">
+            <!-- Content for the settings dialog goes here -->
+            
+            <!-- Div containing options to change the passage type -->
+            <div>
+                <h3 class="dialog-titles">Passage Type:</h3>
+                <RadioButton bind:group={passageIsRandomQuote} value={false}>Random words</RadioButton>
+                <br/>
+                <RadioButton bind:group={passageIsRandomQuote} value={true}>Random quote</RadioButton>
+            </div>
+    
+            <!-- Div containing options to change the amount of time -->
+            <div>
+                <h3 class="dialog-titles">Amount of time:</h3>
+                <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={15}>15s</RadioButton>
+                <br/>
+                <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={30}>30s</RadioButton>
+                <br/>
+                <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={60}>60s</RadioButton>
+            </div>
+
+            <!-- Close button -->
+            <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (settingsDialogIsOpen = false)}>Close</Button>
+        </ContentDialog>
+    
+    
+        <!-- Passage and input div -->
+        <div class="passage-input-collection">
+            <div>
+                <h3 id="timer-label">Time left: {wordTimeLeft}s</h3>
+                
+                <div class="passage" bind:this={passageDiv}/>
+    
+                <div class="input-div">
+                    <p class="input-label">Type here:</p>
+                    <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
+                    <!-- Each character inputted into the textbox is passed in to the function as an argument -->
+                    <TextBox bind:value={inputBoxText} id="input-box" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" on:input={(input) => inputBoxOnTextChanged(input.data)}/>
+                </div>
+
+                <div class="links">
+                    <Button
+                        class="hyperlink"
+                        onclick="window.open('https://github.com/Apollo199999999/cep-wa1-typeracer', '_blank', 'noopener');"
+                        variant="hyperlink">
+                        GitHub repository
+                    </Button>
+                    <Button
+                        class="hyperlink"
+                        onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
+                        variant="hyperlink">
+                        Portfolio/Documentation page
+                    </Button>
+                    <Button
+                        class="hyperlink"
+                        onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
+                        variant="hyperlink">
+                        How your results are calculated
+                    </Button>
+                </div>
+            </div>
+        </div>
+    
+        <!-- ContentDialog which shows the result of the typeracer game -->
+        <ContentDialog bind:open={resultDialogIsOpen} on:close={startGame} title="Results">
+            <div>
+                <h1>WPM: {wpm}</h1>
+                <h3>Raw WPM: {rawWPM}</h3>
+                <h3>Accuracy: {typingAccuracy}%</h3>
+                <p>Total characters typed: {totalCharacterCount}</p>
+                <p>Correct characters typed: {correctCharacterCount}</p>
+            </div>
+            <!-- Close button -->
+            <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
+        </ContentDialog>
     </div>
-
-     <!-- Settings dialog -->
-    <ContentDialog bind:open={settingsDialogIsOpen} on:close={startGame} title="Settings">
-        <!-- Content for the settings dialog goes here -->
-        
-        <!-- Div containing options to change the passage type -->
-        <div>
-            <h3 class="dialog-titles">Passage Type:</h3>
-            <RadioButton bind:group={passageIsRandomQuote} value={false}>Random words</RadioButton>
-            <br/>
-            <RadioButton bind:group={passageIsRandomQuote} value={true}>Random quote</RadioButton>
-        </div>
-
-        <!-- Div containing options to change the amount of time -->
-        <div>
-            <h3 class="dialog-titles">Amount of time:</h3>
-            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={15}>15s</RadioButton>
-            <br/>
-            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={30}>30s</RadioButton>
-            <br/>
-            <RadioButton bind:group={wordGameTime} bind:disabled={passageIsRandomQuote} value={60}>60s</RadioButton>
-        </div>
-
-        <!-- Close button -->
-        <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (settingsDialogIsOpen = false)}>Close</Button>
-    </ContentDialog>
-
-
-    <!-- Passage and input div -->
-    <div class="passage-input-collection">
-        <h3 id="timer-label">Time left: {wordTimeLeft}s</h3>
-        <div class="passage" bind:this={passageDiv}/>
-
-        <div class="input-div">
-            <p class="input-label">Type here:</p>
-            <!-- The TextBox contains an on:input event, where it will call the inputBoxOnTextChanged function -->
-            <!-- Each character inputted into the textbox is passed in to the function as an argument -->
-            <TextBox bind:value={inputBoxText} id="input-box" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" on:input={(input) => inputBoxOnTextChanged(input.data)}/>
-        </div>
-    </div>
-
-    <!-- Div which contains quick links at the bottom of the page -->
-    <div class="footer">
-        <Button
-            class="hyperlink"
-            onclick="window.open('https://github.com/Apollo199999999/cep-wa1-typeracer', '_blank', 'noopener');"
-            variant="hyperlink">
-            GitHub repository
-        </Button>
-        <Button
-            class="hyperlink"
-            onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
-            variant="hyperlink">
-            Portfolio/Documentation page
-        </Button>
-        <Button
-            class="hyperlink"
-            onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
-            variant="hyperlink">
-            How the metrics in the game results are calculated
-        </Button>
-    </div>
-
-    <!-- ContentDialog which shows the result of the typeracer game -->
-    <ContentDialog bind:open={resultDialogIsOpen} on:close={startGame} title="Results">
-        <div>
-            <h1>WPM: {wpm}</h1>
-            <h3>Raw WPM: {rawWPM}</h3>
-            <h3>Accuracy: {typingAccuracy}%</h3>
-            <p>Total characters typed: {totalCharacterCount}</p>
-            <p>Correct characters typed: {correctCharacterCount}</p>
-        </div>
-        <!-- Close button -->
-        <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
-    </ContentDialog>
 </body>
+
+
 
 <style lang="scss">
     @use "./src/styles"; 
