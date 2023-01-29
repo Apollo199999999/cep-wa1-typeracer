@@ -267,7 +267,7 @@
         if (passageIsRandomQuote == false) {
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
-            //First generate only 100 words. After the user finishes typing one word, another word will be procedually generated
+            //first generate only 100 words, and after the user finishes typing one word, another word will be procedurally generated
             passageWords = Array.from(words(100));
 
             //load passagewords into div
