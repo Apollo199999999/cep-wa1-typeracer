@@ -52,7 +52,7 @@
     let resultDialogIsOpen = false;
 
     //TYPING SPEED METRICS: 
-    //refer to this: https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc
+    //refer to this: https://matthiaswang.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc
     
     //variable to keep track of the total number of characters from all of the words that the user has entered
     let totalCharacterCount = 0;
@@ -470,12 +470,12 @@
                         GitHub repository
                     </Button>
                     <Button
-                        onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
+                        onclick="window.open('https://matthiaswang.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
                         variant="hyperlink">
                         Portfolio/Documentation page
                     </Button>
                     <Button
-                        onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
+                        onclick="window.open('https://matthiaswang.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
                         variant="hyperlink">
                         How are my results calculated?
                     </Button>
@@ -494,7 +494,7 @@
 
                 <Button
                     class="results-dialog-link"
-                    onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
+                    onclick="window.open('https://matthiaswang.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
                     variant="hyperlink"
                     tabindex="-1">
                     How are my results calculated?
