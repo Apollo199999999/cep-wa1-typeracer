@@ -51,22 +51,23 @@
     //variable to keep track of whether the result dialog (which is showed during game over), is opem
     let resultDialogIsOpen = false;
 
+    //TYPING SPEED METRICS: 
+    //refer to this: https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc
+    
     //variable to keep track of the total number of characters from all of the words that the user has entered
     let totalCharacterCount = 0;
 
     //variable to keep track of the number characters from only the correct words that the user has typed
     let correctCharacterCount = 0;
-
-    //for wpm calculations, refer to this: https://monkeytype.com/about and the portfolio page
+    
+    //variable to store the typing accuracy of the user
+    let typingAccuracy = 0;
 
     //variable to store the typing speed of the user (includes only correct words), in wpm
     let wpm = 0;
     
-    //variable to store the typing speed of the user (includes correct and wrong words) in wpm
+    //variable to store the raw typing speed of the user (includes correct and wrong words) in wpm
     let rawWPM = 0;
-
-    //variable to store the typing accuracy of the user
-    let typingAccuracy = 0;
 
     //#endregion
 
@@ -148,7 +149,6 @@
             function() {
                 //increment quotetimetaken
                 quoteTimeTaken += 1;
-                console.log(quoteTimeTaken);
             }
         , 1000);
     }
@@ -158,6 +158,16 @@
         //make the input box lose focus
         var inputBox = document.getElementById("input-box");
         inputBox.blur();
+
+        //stop the timer for the words, if the timer exists
+        if (wordTimerInterval != null) {
+            clearInterval(wordTimerInterval);
+        }
+
+        //stop measuring the time taken for the quote, if it exists
+        if (quoteTimeInterval != null) {
+            clearInterval(quoteTimeInterval);
+        }
 
         //formatter to format percentage to 2dp
         const decimalFormatter = new Intl.NumberFormat('en-US', {
@@ -217,6 +227,7 @@
         }
 
         if (passageIsRandomQuote == false) {
+            //Passage type is set to "random words"
             //set the timer settings
             //set the time left in the game to the time that the user has selected
             wordTimeLeft = wordGameTime;
@@ -226,6 +237,10 @@
             timer.style.visibility = "visible";
         }
         else {
+            //Passage type is set to "random quote"
+            //clear the time taken for the quote
+            quoteTimeTaken = 0;
+
             //hide the timer
             var timer = document.getElementById("timer-label");
             timer.style.visibility = "hidden";
@@ -252,7 +267,7 @@
         if (passageIsRandomQuote == false) {
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
-            //First generate only 100 words. After the user finishes typing one word, another word will be generated
+            //First generate only 100 words. After the user finishes typing one word, another word will be procedually generated
             passageWords = Array.from(words(100));
 
             //load passagewords into div
@@ -284,7 +299,8 @@
         }
 
         //start the timer on first input, only if the user has selected "random words" as passage type 
-        // (if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote
+        //if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote. 
+        //instead, for "random quote" passage type, we record the time taken
         if (wordTimerStarted == false && passageIsRandomQuote == false) {
             startWordTimer();
             wordTimerStarted = true;
@@ -298,7 +314,8 @@
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
         let currentWord = passageWords[0];
 
-        //first, we check if the last characer of the text in the textbox is a space. If so, we move on to the next word
+        //first, we check if the last characer of the text in the textbox is a space, and the text in the textbox does not only contain spaces. 
+        //If so, we move on to the next word
         if (inputBoxText.endsWith(" ") && inputBoxText.trim().length >= 1) {
             //remove the first word of the passageWords, to indicate that the user has progressed
             passageWords.shift();
@@ -359,9 +376,11 @@
             var elements = document.getElementsByClassName("word-highlighted");
             var span = elements[0];
 
-            //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
-            span.classList.remove("word-highlighted");
-            span.classList.add("word-error");
+           if (span != null) {
+                //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
+                span.classList.remove("word-highlighted");
+                span.classList.add("word-error");
+           }
         }
         else {
             //restore the grey highlighted state of the word in the passage
@@ -476,7 +495,8 @@
                 <Button
                     class="results-dialog-link"
                     onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
-                    variant="hyperlink">
+                    variant="hyperlink"
+                    tabindex="-1">
                     How your results are calculated
                 </Button>
             </div>
