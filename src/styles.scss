@@ -123,3 +123,9 @@ h3 {
     }
     
 }
+
+:global(.results-dialog-link) {
+    //Offset the default padding so that the text in the link aligns with the other text in the results dialog
+    margin-left: -11px;
+    margin-top: -2px;
+}

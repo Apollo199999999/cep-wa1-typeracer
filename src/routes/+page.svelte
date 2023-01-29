@@ -446,19 +446,16 @@
 
                 <div class="links">
                     <Button
-                        class="hyperlink"
                         onclick="window.open('https://github.com/Apollo199999999/cep-wa1-typeracer', '_blank', 'noopener');"
                         variant="hyperlink">
                         GitHub repository
                     </Button>
                     <Button
-                        class="hyperlink"
                         onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d', '_blank', 'noopener');"
                         variant="hyperlink">
                         Portfolio/Documentation page
                     </Button>
                     <Button
-                        class="hyperlink"
                         onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
                         variant="hyperlink">
                         How your results are calculated
@@ -475,6 +472,13 @@
                 <h3>Accuracy: {typingAccuracy}%</h3>
                 <p>Total characters typed: {totalCharacterCount}</p>
                 <p>Correct characters typed: {correctCharacterCount}</p>
+
+                <Button
+                    class="results-dialog-link"
+                    onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
+                    variant="hyperlink">
+                    How your results are calculated
+                </Button>
             </div>
             <!-- Close button -->
             <Button slot="footer" variant="accent" tabindex="-1" on:click={() => (resultDialogIsOpen = false)}>Close</Button>
