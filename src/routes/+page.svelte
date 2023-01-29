@@ -477,7 +477,7 @@
                     <Button
                         onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
                         variant="hyperlink">
-                        How your results are calculated
+                        How are my results calculated?
                     </Button>
                 </div>
             </div>
@@ -497,7 +497,7 @@
                     onclick="window.open('https://cheerful-scabiosa-05d.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc', '_blank', 'noopener');"
                     variant="hyperlink"
                     tabindex="-1">
-                    How your results are calculated
+                    How are my results calculated?
                 </Button>
             </div>
             <!-- Close button -->
