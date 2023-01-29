@@ -73,20 +73,28 @@ h3 {
 
     //Style all of the span elements in passage, as they will be what the user sees as the generated words
     :global(.passage-word) {
-        font-family: var(--fds-font-family-display);
-        color: var(--fds-text-secondary);
-        font-weight: 600;
-        font-size: 25px;
         margin: 0px 3px 0px 3px;
         //Set specific line height so that the <span> element doesn't get cut off halfway when using other fonts
         line-height: calc((200px - 16px - 16px) / 5);
+
+        //Font settings
+        font-family: var(--fds-font-family-display);
+        font-weight: 600;
+        font-size: 25px;
+        color: var(--fds-text-primary);
+        opacity: 0.85;
     }
 
     //Different styles for the words in the passage depending on what the user inputted
 
     //Style for highlighted word, which shows the current word that the user is supposed to type
     :global(.word-highlighted) {
-        background-color: var(--fds-text-disabled);
+        @media (prefers-color-scheme: light) {
+            background-color: adjust-color($color: lightgrey, $lightness: -10%, $alpha: 1.0)
+        }
+        @media (prefers-color-scheme: dark) {
+            background-color: adjust-color($color: grey, $lightness: -5%, $alpha: 1.0)
+        }
     }
 
     //Style for when the user mistypes the word
