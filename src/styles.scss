@@ -93,7 +93,7 @@ h3 {
             background-color: adjust-color($color: lightgrey, $lightness: -10%, $alpha: 1.0)
         }
         @media (prefers-color-scheme: dark) {
-            background-color: adjust-color($color: grey, $lightness: -5%, $alpha: 1.0)
+            background-color: adjust-color($color: grey, $lightness: -5%, $alpha: 1.0);
         }
     }
 
