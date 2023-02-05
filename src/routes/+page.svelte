@@ -6,68 +6,40 @@
     //import onMount function to execute javascript once tha page has loaded in the browser
     import { onMount } from 'svelte';
     //import library for random word generation
-    import { words } from '/src/random-words.js';
+    import { words } from '../scripts/random-words.js';
+    //import class to calculate results metrics
+    import { metricsCalculatorClass } from '../scripts/metrics-calculator.js'
 
     //#endregion
 
     //#region Variable declarations
 
-    //variable to keep track of passage type
-    let passageIsRandomQuote = false;
-
-    //variable to keep track of whether the settings dialog is open or not
-    let settingsDialogIsOpen = false;
-
-    //variable to keep track of the amount of time per game that the user has selected (for "random words" passage type)
-    let wordGameTime = 30;
-
-    //variable to keep track of the amount of time left per game (for "random words" passage type)
-    let wordTimeLeft = wordGameTime;
-
-    //array to store all of the words in the passage
-    var passageWords = [];
-
-    //variable to store the passageDiv object, binded from HTML
-    let passageDiv;
-
     //variable to store the text in the input textbox, binded from HTML
     let inputBoxText = '';
 
-    //variable to store if the timer has started
-    let wordTimerStarted = false;
+    //variables to keep track of whether the respective dialogs are open or not
+    let settingsDialogIsOpen = false, resultDialogIsOpen = false;
 
-    //variable to store the setInterval object for the timer, so that we can stop the timer from anywhere (for "random words" passage type)
-    let wordTimerInterval;
+    //Variables relating to the passage generation
+    //passageIsRandomQuote - stores passage type
+    //passageWords array - to store all of the words in the passage
+    //passageDiv - to store the passageDiv object, binded from HTML
+    let passageIsRandomQuote = false, passageWords = [], passageDiv;
 
-    //variable to keep track of time taken for the user to finish typing the quote to calculate WPM (for "random quote" passage type)
-    let quoteTimeTaken = 0;
+    //Word Variables
+    //wordGameTime - to keep track of the amount of time per game that the user has selected (for "random words" passage type)
+    //wordTimeLeft - to keep track of the amount of time left per game (for "random words" passage type)
+    //wordTimerInterval - to store the setInterval object for the timer, so that we can stop the timer from anywhere (for "random words" passage type)
+    let wordGameTime = 30, wordTimeLeft = wordGameTime, wordTimerInterval = null;
 
-    //variable to keep track of whether the quoteTimeTaken has started counting the time taken (to help calculate wpm)
-    let quoteTimeStarted = false;
-
-    //variable to store the setInterval object for the time taken by the user to tupe the quote
-    let quoteTimeInterval;
+    //Quote variables
+    //quoteTimeTaken - to keep track of time taken for the user to finish typing the quote to calculate WPM (for "random quote" passage type)
+    //quoteTimeInterval - to store the setInterval object for the time taken by the user to tupe the quote
+    let quoteTimeTaken = 0, quoteTimeInterval = null;
     
-    //variable to keep track of whether the result dialog (which is showed during game over), is opem
-    let resultDialogIsOpen = false;
-
     //TYPING SPEED METRICS: 
     //refer to this: https://matthiaswang.notion.site/CEP-WA1-Typeracer-Game-Portfolio-ffd1182cfcd443f6a437e27761413d9d#971081aa17f4446b8c22069c4a7332dc
-    
-    //variable to keep track of the total number of characters from all of the words that the user has entered
-    let totalCharacterCount = 0;
-
-    //variable to keep track of the number characters from only the correct words that the user has typed
-    let correctCharacterCount = 0;
-    
-    //variable to store the typing accuracy of the user
-    let typingAccuracy = 0;
-
-    //variable to store the typing speed of the user (includes only correct words), in wpm
-    let wpm = 0;
-    
-    //variable to store the raw typing speed of the user (includes correct and wrong words) in wpm
-    let rawWPM = 0;
+    let totalCharacterCount = 0, correctCharacterCount = 0, typingAccuracy = 0, wpm = 0, rawWPM = 0;
 
     //#endregion
 
@@ -149,8 +121,23 @@
             function() {
                 //increment quotetimetaken
                 quoteTimeTaken += 1;
+                console.log(quoteTimeTaken);
             }
         , 1000);
+    }
+
+    function clearTimers() {
+        //stop the timer for the words, if the timer exists
+        if (wordTimerInterval != null) {
+            clearInterval(wordTimerInterval);
+            wordTimerInterval = null;
+        }
+
+        //stop measuring the time taken for the quote, if it exists
+        if (quoteTimeInterval != null) {
+            clearInterval(quoteTimeInterval);
+            quoteTimeInterval = null;
+        }
     }
 
     //function that is called when the game ends
@@ -159,36 +146,22 @@
         var inputBox = document.getElementById("input-box");
         inputBox.blur();
 
-        //stop the timer for the words, if the timer exists
-        if (wordTimerInterval != null) {
-            clearInterval(wordTimerInterval);
-        }
+        clearTimers();
 
-        //stop measuring the time taken for the quote, if it exists
-        if (quoteTimeInterval != null) {
-            clearInterval(quoteTimeInterval);
-        }
-
-        //formatter to format percentage to 2dp
-        const decimalFormatter = new Intl.NumberFormat('en-US', {
-            minimumFractionDigits: 0,      
-            maximumFractionDigits: 2,
-        });
+        //init new metricsCalculator class
+        let metricsCalculator = new metricsCalculatorClass();
 
         //update the wpm stats respectively for both "random word" and "random quote" passage types
         if (passageIsRandomQuote == false) {
-            wpm = (correctCharacterCount / 5) / (wordGameTime / 60);
-            rawWPM = (totalCharacterCount / 5) / (wordGameTime / 60);
+            wpm = metricsCalculator.calculateWPM(correctCharacterCount, wordGameTime);
+            rawWPM = metricsCalculator.calculateRawWPM(totalCharacterCount, wordGameTime);
         }
         else {
-            wpm = (correctCharacterCount / 5) / (quoteTimeTaken / 60);
-            rawWPM = (totalCharacterCount / 5) / (quoteTimeTaken / 60);
+            wpm = metricsCalculator.calculateWPM(correctCharacterCount, quoteTimeTaken);
+            rawWPM = metricsCalculator.calculateRawWPM(totalCharacterCount,quoteTimeTaken);
         }
 
-        wpm = decimalFormatter.format(wpm);
-        rawWPM = decimalFormatter.format(rawWPM);
-        typingAccuracy = (correctCharacterCount / totalCharacterCount) * 100;
-        typingAccuracy = decimalFormatter.format(typingAccuracy);
+        typingAccuracy = metricsCalculator.calculateTypingAccuracy(correctCharacterCount, totalCharacterCount)
 
         //show the result dialog
         resultDialogIsOpen = true;
@@ -201,55 +174,26 @@
         inputBox.blur();
         
         //reset wpm stats
-        wpm = 0;
-        rawWPM = 0;
-        typingAccuracy = 0;
-        totalCharacterCount = 0;
-        correctCharacterCount = 0;
+        wpm = rawWPM = typingAccuracy = totalCharacterCount = correctCharacterCount = 0;
 
         //close the result dialog
         resultDialogIsOpen = false;
 
-        //set wordTimerStarted to false
-        wordTimerStarted = false;
+        clearTimers();
 
-        //set quotetimestarted to false
-        quoteTimeStarted = false;
-
-        //stop the timer for the words, if the timer exists
-        if (wordTimerInterval != null) {
-            clearInterval(wordTimerInterval);
-        }
-
-        //stop measuring the time taken for the quote, if it exists
-        if (quoteTimeInterval != null) {
-            clearInterval(quoteTimeInterval);
-        }
-
+        //reset timetaken/timeleft variables and hide/show timer depending on passage type
+        var timer = document.getElementById("timer-label");
         if (passageIsRandomQuote == false) {
-            //Passage type is set to "random words"
-            //set the timer settings
-            //set the time left in the game to the time that the user has selected
             wordTimeLeft = wordGameTime;
-
-            //show the timer element
-            var timer = document.getElementById("timer-label");
             timer.style.visibility = "visible";
         }
         else {
-            //Passage type is set to "random quote"
-            //clear the time taken for the quote
             quoteTimeTaken = 0;
-
-            //hide the timer
-            var timer = document.getElementById("timer-label");
             timer.style.visibility = "hidden";
         }
 
-        //clear the passagediv
+        //clear the passagediv and scroll passageDiv to the top
         passageDiv.innerHTML = "";
-
-        //scroll passageDiv to the top
         passageDiv.scrollTop = 0;
 
         //clear the inputbox
@@ -301,14 +245,12 @@
         //start the timer on first input, only if the user has selected "random words" as passage type 
         //if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote. 
         //instead, for "random quote" passage type, we record the time taken
-        if (wordTimerStarted == false && passageIsRandomQuote == false) {
+        if (wordTimerInterval == null && passageIsRandomQuote == false) {
             startWordTimer();
-            wordTimerStarted = true;
         }
-        else if (quoteTimeStarted == false && passageIsRandomQuote == true) {
+        else if (quoteTimeInterval == null && passageIsRandomQuote == true) {
             //start measuring the time taken by the user to type the quoe
             measureQuoteTimeTaken();
-            quoteTimeStarted = true;
         }
 
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
@@ -453,7 +395,7 @@
         <div class="passage-input-collection">
             <div>
                 <h3 id="timer-label">Time left: {wordTimeLeft}s</h3>
-                
+
                 <div class="passage" bind:this={passageDiv}/>
     
                 <div class="input-div">
