@@ -9,10 +9,20 @@
     import { words } from '../scripts/random-words.js';
     //import class to calculate results metrics
     import { metricsCalculatorClass } from '../scripts/metrics-calculator.js'
+    //import class to load words into passage
+    import { passageFunctionsClass } from '../scripts/passage-functions.js'
+    //import class to highlight words in passage
+    import { wordHighlightingFunctionsClass } from '../scripts/word-highlighting-functions.js'
 
     //#endregion
 
     //#region Variable declarations
+
+    //init passageFunctions class
+    let passageFunctions = new passageFunctionsClass();
+
+    //init wordHighlightingFunctions class
+    let wordHighlightingFunctions = new wordHighlightingFunctionsClass();
 
     //variable to store the text in the input textbox, binded from HTML
     let inputBoxText = '';
@@ -45,54 +55,19 @@
 
     //#region Game functions
 
-    //helper function to determine if an element is hidden by overflow
-    function isVerticallyVisible (parent, child) {
-        return !(child.getBoundingClientRect().top - parent.getBoundingClientRect().top > parent.clientHeight);
-    }
+    //#region Timer functions
 
-    //helper function to generate a random word and load it into the passage div
-    function generateRandomWord() {
-        //create a new span to add into the passage div, where the text content is a random word
-        var randomWord = words();
-        const span = document.createElement("span");
-        span.textContent = randomWord + ' ';
-        span.className = 'passage-word';
-        //add the span to passage div, and add the random word to passage words array
-        passageDiv.appendChild(span);
-        passageWords.push(randomWord);
-
-    }
-
-    //helper function to load passagewords array into the passage div
-    function loadWordsIntoDiv() {
-        //load all of the words in passageWords in the passage div
-        for (var i = 0; i < passageWords.length; i++) {
-            const span = document.createElement("span");
-            span.textContent = passageWords[i] + ' ';
-            span.className = 'passage-word';
-            //highlight the first word
-            if (i == 0) {
-                span.classList.add('word-highlighted');
-            }
-            passageDiv.appendChild(span);
+    //function that starts timer if not started
+    function firstStartTimers() {
+        //start the timer on first input, only if the user has selected "random words" as passage type 
+        //if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote. 
+        //instead, for "random quote" passage type, we record the time taken
+        if (wordTimerInterval == null && passageIsRandomQuote == false) {
+            startWordTimer();
         }
-    }
-
-    //helper function to generate quote by querying the Quotable API
-    async function generateRandomQuote() {
-        // Fetch a random quote from the Quotable API
-        const response = await fetch("https://api.quotable.io/random?minLength=200");
-        const data = await response.json();
-
-        if (response.ok) {
-            //return the quote
-            return data.content;
-        } 
-        else {
-            //show an alert
-            alert("An error occured while trying to get a random quote.");
-            location.reload();
-            return;
+        else if (quoteTimeInterval == null && passageIsRandomQuote == true) {
+            //start measuring the time taken by the user to type the quoe
+            measureQuoteTimeTaken();
         }
     }
 
@@ -139,6 +114,8 @@
             quoteTimeInterval = null;
         }
     }
+
+    //#endregion
 
     //function that is called when the game ends
     function gameOver() {
@@ -215,18 +192,18 @@
             passageWords = Array.from(words(100));
 
             //load passagewords into div
-            loadWordsIntoDiv();
+            passageFunctions.loadWordsIntoDiv(passageDiv, passageWords);
             
         }
         else {
             //get random quote using quotable API
-            let randomQuote = await generateRandomQuote();
+            let randomQuote = await passageFunctions.generateRandomQuote();
             
             //split random quote into words by spaces, and assign it to the passageWords array
             passageWords = Array.from(randomQuote.split(" ").filter(Boolean));
 
             //load passagewords into div
-            loadWordsIntoDiv();
+            passageFunctions.loadWordsIntoDiv(passageDiv, passageWords);
            
         }
     }
@@ -242,16 +219,8 @@
             totalCharacterCount += 1;
         }
 
-        //start the timer on first input, only if the user has selected "random words" as passage type 
-        //if the user has selected "random quote" as passage type, there will be no timer, and the game will stop once the user has finished typing the quote. 
-        //instead, for "random quote" passage type, we record the time taken
-        if (wordTimerInterval == null && passageIsRandomQuote == false) {
-            startWordTimer();
-        }
-        else if (quoteTimeInterval == null && passageIsRandomQuote == true) {
-            //start measuring the time taken by the user to type the quoe
-            measureQuoteTimeTaken();
-        }
+        //start necessary timers for game time/time taken
+        firstStartTimers();
 
         //the current word is the first word in the passageWords, as everytime the user progresses, the next word is pushed to the front
         let currentWord = passageWords[0];
@@ -262,79 +231,36 @@
             //remove the first word of the passageWords, to indicate that the user has progressed
             passageWords.shift();
 
-            //get all elements with either the "word-highlighted" class or the "word-error" class (which would return the current span), and remove both classes from the span
-            //this removes the highlighting and error flagging from the word
+            //get the current span the user is typing
             var spans = document.querySelectorAll(".word-highlighted,.word-error");
-            var span = spans[0];
-            span.classList.remove("word-highlighted");
-            span.classList.remove("word-error");
+            var currentSpan = spans[0];
 
-            //next, depending on if the word the user typed is correct, make the text color of the word red or green
-            let inputBoxTextWithoutSpace = inputBoxText.substring(0, inputBoxText.length - 1);
-
-            if (inputBoxTextWithoutSpace == currentWord) {
-                span.classList.add("word-correct");
-
-                //add the number of characters in the currentWord to the correctcharactercount variable
-                correctCharacterCount += inputBoxText.length;
-            }
-            else {
-                span.classList.add("word-wrong");
-            }
+            //highlight the current word based on if it is correctly typed or not
+            correctCharacterCount += wordHighlightingFunctions.highlightCompletedWord(currentSpan, inputBoxText, currentWord);
 
             //clear the input textbox
             inputBoxText = "";
 
-            //get the next span
-            var nextSpan = span.nextElementSibling;
-
-            //if the next span is null, it means that the user has reached the end of the quote. Show game over screen
-            if (nextSpan == null) {
-                gameOver();
-                return;
-            }
-
             //add another random word to the end of the passage div if applicable
             if (passageIsRandomQuote == false) {
-                generateRandomWord();
+                passageFunctions.generateRandomWord(passageDiv, passageWords);
             }
 
-            //highlight the next word
-            nextSpan.classList.add("word-highlighted");
-
-            //if the next word is out of view, scroll the passage div manually to bring it into view
-            if (isVerticallyVisible(passageDiv, nextSpan) == false) {
-                passageDiv.scrollTop += (200 - 16 - 16);
-            }
+            //highlight the next word. if it fails, that means the user has reached the end of the quote, so show game over screen
+            wordHighlightingFunctions.highlightNextWord(currentSpan);
 
             //exit the function
             return;
         }
 
         //check if inputBoxText is equal to the substring of the currentword up until the length of the inputBoxText
-        //if they are not the same, change the highlight colour of the span to red
+        //if they are not the same, change the highlight colour of the span to red (flag the word)
         if (inputBoxText != currentWord.substring(0, inputBoxText.length)) {
-            //get the span which is currently highlighted
-            var elements = document.getElementsByClassName("word-highlighted");
-            var span = elements[0];
-
-           if (span != null) {
-                //modify the classes of the span element so that it takes on the word-error class instead, where the background is highlighted red
-                span.classList.remove("word-highlighted");
-                span.classList.add("word-error");
-           }
+            wordHighlightingFunctions.tryFlagWord();
         }
         else {
-            //restore the grey highlighted state of the word in the passage
-            //get the span which is currently flagged as an error
-            var elements = document.getElementsByClassName("word-error");
-            var span = elements[0];
-
-            if (span != null) {
-                //modify the classes of the span element so that it takes on the word-highlighted class instead, where the background is highlighted grey
-                span.classList.remove("word-error");
-                span.classList.add("word-highlighted");
-            }
+            //unflag the word
+            wordHighlightingFunctions.tryUnflagWord();
         }
     }
     //#endregion
