@@ -24,6 +24,7 @@ export class wordHighlightingFunctionsClass {
 
         if (span != null) {
             //modify the classes of the span element so that it takes on the word-highlighted class instead, where the background is highlighted grey                span.classList.remove("word-error");
+            span.classList.remove("word-error");
             span.classList.add("word-highlighted");
         }
     }
