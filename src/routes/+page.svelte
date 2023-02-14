@@ -24,6 +24,13 @@
     //init wordHighlightingFunctions class
     let wordHighlightingFunctions = new wordHighlightingFunctionsClass();
 
+    //variable to store difficulty settings
+    //0 represents easy difficulty, 1 represents normal difficulty, 2 represents hard difficulty
+    //basically, if difficulty is easy, the passage will only contain short words (shorter than 6 characters)
+    //if the difficulty is hard, the passage will only contain long words (longer than or as long as 6 characters)
+    //if difficulty is normal, the passage will contain a mix of short and long words
+    let gameDifficulty = 1;
+
     //variable to store the text in the input textbox, binded from HTML
     let inputBoxText = '';
 
@@ -189,7 +196,38 @@
             //to generate the random words, we will use the random-words.js script, which is copied from here: https://github.com/apostrophecms/random-words/blob/main/index.js
             //the reason I do this instead of using the npm module directly, is because the functions needs to be exported in order to be used in SvelteKit
             //first generate only 100 words, and after the user finishes typing one word, another word will be procedurally generated
-            passageWords = Array.from(words(100));
+            
+            //generate appropriate word lengths based on game difficulty
+            if (gameDifficulty == 1) {
+                //Normal difficulty
+                passageWords = Array.from(words(100));
+            }
+            else if (gameDifficulty == 0) {
+                //Easy difficulty
+                for (let i = 0; i < 100; i++) {
+                    let randomWord = words();
+
+                    //only generate words with length less than 6
+                    while (randomWord.length >= 6) {
+                        randomWord = words();
+                    }
+
+                    passageWords.push(randomWord);
+                }
+            }
+            else {
+                //Hard difficulty
+                for (let i = 0; i < 100; i++) {
+                    let randomWord = words();
+
+                    //only generate words with length less than 6
+                    while (randomWord.length < 6) {
+                        randomWord = words();
+                    }
+
+                    passageWords.push(randomWord);
+                }
+            }
 
             //load passagewords into div
             passageFunctions.loadWordsIntoDiv(passageDiv, passageWords);
@@ -301,7 +339,17 @@
                 <br/>
                 <RadioButton bind:group={passageIsRandomQuote} value={true}>Random quote</RadioButton>
             </div>
-    
+            
+            <!-- Div containing difficulty options -->
+            <div>
+                <h3 class="dialog-titles">Game Difficulty</h3>
+                <RadioButton bind:group={gameDifficulty} bind:disabled={passageIsRandomQuote} value={0}>Easy</RadioButton>
+                <br/>
+                <RadioButton bind:group={gameDifficulty} bind:disabled={passageIsRandomQuote} value={1}>Normal</RadioButton>
+                <br/>
+                <RadioButton bind:group={gameDifficulty} bind:disabled={passageIsRandomQuote} value={2}>Hard</RadioButton>
+            </div>
+
             <!-- Div containing options to change the amount of time -->
             <div>
                 <h3 class="dialog-titles">Amount of time:</h3>
