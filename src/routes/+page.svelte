@@ -334,7 +334,7 @@
             
             <!-- Div containing options to change the passage type -->
             <div>
-                <h3 class="dialog-titles">Passage Type:</h3>
+                <h3 class="dialog-titles">Passage type:</h3>
                 <RadioButton bind:group={passageIsRandomQuote} value={false}>Random words</RadioButton>
                 <br/>
                 <RadioButton bind:group={passageIsRandomQuote} value={true}>Random quote</RadioButton>
@@ -342,7 +342,7 @@
             
             <!-- Div containing difficulty options -->
             <div>
-                <h3 class="dialog-titles">Game Difficulty</h3>
+                <h3 class="dialog-titles">Game difficulty</h3>
                 <RadioButton bind:group={gameDifficulty} bind:disabled={passageIsRandomQuote} value={0}>Easy</RadioButton>
                 <br/>
                 <RadioButton bind:group={gameDifficulty} bind:disabled={passageIsRandomQuote} value={1}>Normal</RadioButton>
