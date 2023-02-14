@@ -26,8 +26,8 @@
 
     //variable to store difficulty settings
     //0 represents easy difficulty, 1 represents normal difficulty, 2 represents hard difficulty
-    //basically, if difficulty is easy, the passage will only contain short words (shorter than 6 characters)
-    //if the difficulty is hard, the passage will only contain long words (longer than or as long as 6 characters)
+    //basically, if difficulty is easy, the passage will only contain short words (shorter than 5 characters)
+    //if the difficulty is hard, the passage will only contain long words (longer than or as long as 7 characters)
     //if difficulty is normal, the passage will contain a mix of short and long words
     let gameDifficulty = 1;
 
@@ -207,8 +207,8 @@
                 for (let i = 0; i < 100; i++) {
                     let randomWord = words();
 
-                    //only generate words with length less than 6
-                    while (randomWord.length >= 6) {
+                    //only generate words with length less than 5
+                    while (randomWord.length >= 5) {
                         randomWord = words();
                     }
 
@@ -220,8 +220,8 @@
                 for (let i = 0; i < 100; i++) {
                     let randomWord = words();
 
-                    //only generate words with length less than 6
-                    while (randomWord.length < 6) {
+                    //only generate words with length greater or equal to 7
+                    while (randomWord.length < 7) {
                         randomWord = words();
                     }
 
