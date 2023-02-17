@@ -50,7 +50,7 @@ export class wordHighlightingFunctionsClass {
         }
     }
 
-    highlightNextWord(currentWordSpan) {
+    highlightNextWord(passageDiv, currentWordSpan) {
         //get the next span
         var nextSpan = currentWordSpan.nextElementSibling;
 

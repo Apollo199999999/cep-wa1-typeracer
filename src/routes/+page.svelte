@@ -285,7 +285,7 @@
             }
 
             //highlight the next word. if it fails, that means the user has reached the end of the quote, so show game over screen
-            wordHighlightingFunctions.highlightNextWord(currentSpan);
+            wordHighlightingFunctions.highlightNextWord(passageDiv, currentSpan);
 
             //exit the function
             return;
