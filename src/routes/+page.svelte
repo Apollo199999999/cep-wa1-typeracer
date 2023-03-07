@@ -73,7 +73,7 @@
             startWordTimer();
         }
         else if (quoteTimeInterval == null && passageIsRandomQuote == true) {
-            //start measuring the time taken by the user to type the quoe
+            //start measuring the time taken by the user to type the quote
             measureQuoteTimeTaken();
         }
     }
@@ -103,7 +103,6 @@
             function() {
                 //increment quotetimetaken
                 quoteTimeTaken += 1;
-                console.log(quoteTimeTaken);
             }
         , 1000);
     }
